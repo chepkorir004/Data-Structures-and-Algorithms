@@ -1,0 +1,60 @@
+FONCIE NKIROTE SCT222-0317/2022
+BRENDA CHEPKORIRSCT222-0348/2022
+
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        if not self.is_empty():
+            return self.items.pop()
+        else:
+            raise IndexError("pop from empty stack")
+
+    def peek(self):
+        if not self.is_empty():
+            return self.items[-1]
+        else:
+            raise IndexError("peek from empty stack")
+
+    def size(self):
+        return len(self.items)
+
+
+def infix_to_rpn(expression):
+    precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
+    output = []
+    stack = Stack()
+
+    for token in expression.split():
+        if token.isdigit():
+            output.append(token)
+        elif token in precedence:
+            while (not stack.is_empty() and precedence.get(token, 0) <= precedence.get(stack.peek(), 0)):
+                output.append(stack.pop())
+            stack.push(token)
+        elif token == '(':
+            stack.push(token)
+        elif token == ')':
+            while (not stack.is_empty() and stack.peek() != '('):
+                output.append(stack.pop())
+            stack.pop()  # Discard the '('
+        else:
+            raise ValueError("Invalid token: {}".format(token))
+
+    while not stack.is_empty():
+        output.append(stack.pop())
+
+    return ' '.join(output)
+
+
+if __name__ == "__main__":
+    infix_expression = input("Enter the infix expression: ")
+    rpn_expression = infix_to_rpn(infix_expression)
+    print("The RPN (postfix) expression is:", rpn_expression)
